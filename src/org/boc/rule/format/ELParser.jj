@@ -1,0 +1,776 @@
+/*****************************************
+ * OPTIONS *
+ *****************************************/
+
+options {
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = true;
+  STATIC = false;
+}
+
+/*****************************************
+ * PARSER JAVA CODE *
+ *****************************************/
+
+PARSER_BEGIN(ELParser)
+
+package org.boc.rule.format;
+
+import org.boc.rule.*;
+import java.util.*;
+import java.io.*;
+/**
+ * Generated EL parser.
+ * 
+ * @author Nathan Abramson
+ * @author Shawn Bayern
+ */
+
+public class ELParser {
+  ExpressionFormatter formatter = new ExpressionFormatter();
+  boolean isFunction = false;
+  boolean isPrefix = false;
+
+  public void setFormatter(ExpressionFormatter formatter)
+  {
+    this.formatter = formatter;
+  }
+  public static void main(String args[]) 
+       throws ParseException
+  {
+    ELParser parser = new ELParser (System.in);
+    parser.formatter.start();
+    parser.Expressions ();
+    parser.formatter.finish();
+  }
+  public void processSpecial(Token t)
+  {
+    if (t.specialToken == null) return;	
+    // The above statement determines that there are no special tokens
+    // and returns control to the caller.
+    Token tmp_t = t.specialToken;
+    while (tmp_t.specialToken != null) tmp_t = tmp_t.specialToken;
+    // The above line walks back the special token chain until it
+    // reaches the first special token after the previous regular
+    // token.
+    while (tmp_t != null) {
+      if ( "\n".equals(tmp_t.image) ) {
+	this.formatter.newline(tmp_t.image);
+      }
+      else
+        this.formatter.space(tmp_t.image);
+      tmp_t = tmp_t.next;
+    }
+    // The above loop now walks the special token chain in the forward
+    // direction printing them in the proce
+  }
+}
+//     { processSpecial(t); keyword(t.image); }
+PARSER_END(ELParser)
+
+
+/*****************************************
+ * TOKENS *
+ *****************************************/
+
+/*****************************************
+/** Tokens appearing inside of an ${...} construct **/
+
+/* WHITE SPACE */
+/*
+<DEFAULT> SKIP :
+{
+  " "
+| "　"
+| "\t"
+| "\n"
+| "\r"
+}
+*/
+
+SPECIAL_TOKEN :
+{
+  < NOMEAN: "\r"|"\n"|"\t"|" "|"　" >
+}
+
+
+<DEFAULT> TOKEN :
+{
+/* Literals */
+
+  < INTEGER_LITERAL: ["0"-"9"] (["0"-"9","十","百","千","万","亿"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9","十","百","千","万","亿"])* (<EXPONENT>)?
+      | "." (["0"-"9","十","百","千","万","亿"])+ (<EXPONENT>)?
+      | (["0"-"9"])+ <EXPONENT>
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < STRING_LITERAL:
+      ("\"" ((~["\"","\\"]) | ("\\" ( ["\\","\""] )))* "\"") |
+      ("\'" ((~["\'","\\"]) | ("\\" ( ["\\","\'"] )))* "\'")
+  >
+|
+  < BADLY_ESCAPED_STRING_LITERAL:
+      ("\"" (~["\"","\\"])* ("\\" ( ~["\\","\""] ))) |
+      ("\'" (~["\'","\\"])* ("\\" ( ~["\\","\'"] )))
+  >
+
+/* Reserved Words and Symbols */
+
+| < TRUE1: "true" >
+| < TRUE2: "真" >
+| < FALSE1: "false" >
+| < FALSE2: "假" >
+| < NULL: "null" >
+| < DOT: "." >
+| < GT1: ">" >
+| < GT2: "gt" >
+| < GT3: "大于" >
+| < GT4: "超过" >
+| < LT1: "<" >
+| < LT2: "lt" >
+| < LT3: "小于" >
+| < LT4: "少于" >
+| < EQ1: "==" >
+| < EQ2: "eq" >
+| < EQ3: "是" >
+| < LE1: "<=" >
+| < LE2: "le" >
+| < LE3: "不大于" >
+| < LE4: "没超过" >
+| < GE1: ">=" >
+| < GE2: "ge" >
+| < GE3: "不小于" >
+| < GE4: "至少" >
+| < NE1: "!=" >
+| < NE2: "ne" >
+| < NE3: "不等于" >
+| < LPAREN1: "(" >
+| < LPAREN2: "（" >
+| < RPAREN1: ")" >
+| < RPAREN2: "）" >
+| < SEMI1: ";" >
+| < SEMI2: "；" >
+| < COMMA1: "," >
+| < COMMA2: "，" >
+| < COLON: ":" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < PLUS1: "+" >
+| < PLUS2: "加" >
+| < PLUS3: "正" >
+| < PLUS4: "＋" >
+| < MINUS1: "-" >
+| < MINUS2: "减" >
+| < MINUS3: "负" >
+| < MINUS4: "－" >
+| < MULTIPLY1: "*" >
+| < MULTIPLY2: "乘" >
+| < MULTIPLY3: "×" >
+| < DIVIDE1: "/" >
+| < DIVIDE2: "div" >
+| < DIVIDE3: "除" >
+| < DIVIDE4: "÷" >
+| < MODULUS1: "%" >
+| < MODULUS2: "mod" >
+| < NOT1: "not" >
+| < NOT2: "!" >
+| < NOT3: "不是" >
+| < AND1: "and" >
+| < AND2: "&&" >
+| < AND3: "并且" >
+| < OR1: "or" >
+| < OR2: "||" >
+| < OR3: "或者" >
+| < EMPTY: "empty" >
+| < COND: "?" >
+| < EQUAL1: "=" >
+| < EQUAL2: "等于" >
+| < EQUAL3: "为" >
+| < EQUAL4: "＝" >
+
+| < IF1 : "if" >
+| < IF2 : "如果" > 
+| < IF3 : "假如" >
+| < THEN1 : "then" >
+| < THEN2 : "那么" >
+| < THEN3 : "就" >
+| < ELSE1 : "else" >
+| < ELSE2 : "否则" >
+| < ELSE3 : "不然" >
+
+| < ADDEQ1 : "+=" >
+| < ADDEQ2 : "加上" >
+| < MINUSEQ1 : "-=" >
+| < MINUSEQ2 : "减去" >
+| < STATEMENT_START: "{" >
+| < STATEMENT_END: "}" >
+/* Identifiers */
+
+| < IDENTIFIER: (<LETTER>|<IMPL_OBJ_START>) (<LETTER>|<DIGIT>)* >
+| < #IMPL_OBJ_START: "#" >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+
+/* This is used to catch any non-matching tokens, so as to avoid any
+   TokenMgrErrors */
+| < ILLEGAL_CHARACTER: (~[]) >
+}
+
+
+/*****************************************
+ * GRAMMAR PRODUCTIONS *
+ *****************************************/
+
+void Statement() : 
+{
+}
+{
+  ( LOOKAHEAD(2) 
+    ExpressionStatement() |
+    CompoundStatement() |
+    IfThenElseExpression()
+  )
+  {}
+}
+
+void Expressions() : 
+{
+}
+{
+  (
+    Statement()
+  )+
+  { } 
+}
+
+void CompoundStatement() : 
+{
+  Token t;
+}
+{
+  (
+    t = <STATEMENT_START>
+    { processSpecial(t); formatter.keyword(t.image); }
+    [ Expressions() ]
+    t = <STATEMENT_END>
+    { processSpecial(t); formatter.keyword(t.image); }
+  )
+  { }
+}
+
+void ExpressionStatement() : 
+{
+  Token t;
+}
+{
+  (
+    [ ExpressionSet() ] 
+    ( t = <SEMI1> | t = <SEMI2> )
+    { processSpecial(t); formatter.keyword(t.image); }
+  )
+  { }
+}
+
+void ExpressionSet() : 
+{
+  Token t;
+}
+{
+  (
+    ( Expression() )
+    ( 
+      ( 
+        ( t = <COMMA1> | t = <COMMA2> )
+	{ processSpecial(t); formatter.keyword(t.image); }
+        Expression() 
+      )
+    )*
+  )
+  { }
+}
+
+void SpecialEqualExpression() :
+{
+  Token t;
+}
+{
+  (
+    NamedValue () 
+    (
+      ( t = <ADDEQ1> | t = <ADDEQ2> ) 
+      { processSpecial(t); formatter.keyword(t.image); }
+      | ( t = <MINUSEQ1> | t = <MINUSEQ2>) 
+      { processSpecial(t); formatter.keyword(t.image); }
+    )
+    Expression ()
+  )
+  { }
+}
+
+void IfThenElseExpression() :
+{
+  Token t;
+}
+{
+  (
+    ( t = <IF1> | t = <IF2> | t = <IF3> )
+    { processSpecial(t); formatter.keyword(t.image); }
+    OrExpression()
+    ( t = <THEN1> | t = <THEN2> | t = <THEN3> )
+    { processSpecial(t); formatter.keyword(t.image); }
+    Statement()
+    [ 
+      LOOKAHEAD(1) ( t = <ELSE1> | t = <ELSE2> | t = <ELSE3> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      Statement() 
+    ]
+  )
+  { }
+}
+
+
+void LetExpression() :
+{
+   Token t;
+}
+{
+  (
+    NamedValue () 
+    ( t = <EQUAL1> | t = <EQUAL2> |
+      t = <EQUAL3> | t = <EQUAL4> )
+    { processSpecial(t); formatter.keyword(t.image); }    
+    Expression ()
+  )
+  { }
+}
+
+void Expression () :
+{
+  Token t;
+}
+{
+  (
+   LOOKAHEAD(ConditionalExpression()) ConditionalExpression() |
+   LOOKAHEAD(LetExpression()) LetExpression() |
+   LOOKAHEAD(SpecialEqualExpression()) SpecialEqualExpression() |
+   OrExpression () 
+  )
+  { }
+}
+
+
+void OrExpression () :
+{
+  Token t;
+}
+{
+  AndExpression ()
+    (
+     (
+      ( t = <OR1> | t = <OR2> | t = <OR3> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      )
+     AndExpression ()
+     )*
+  { }
+}
+
+
+void AndExpression () :
+{
+  Token t;
+}
+{
+  EqualityExpression ()
+    (
+     (
+      ( t = <AND1> | t = <AND2> | t = <AND3> ) 
+      { processSpecial(t); formatter.keyword(t.image); }
+      )
+     EqualityExpression ()
+     )*
+  { }
+}
+
+
+void EqualityExpression () :
+{
+  Token t;
+}
+{
+  RelationalExpression ()
+    (
+     (
+      ( t = <EQ1> | t = <EQ2> | t = <EQ3> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      | ( t = <NE1> | t = <NE2> | t = <NE3> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      )
+     RelationalExpression ()
+     )*
+  { }
+}
+
+
+void RelationalExpression () :
+{
+  Token t;
+}
+{
+  AddExpression ()
+    (
+     (
+      (t = <LT1> | t = <LT2> | t = <LT3> | t = <LT4> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      | (t = <GT1> | t = <GT2> | t = <GT3> | t = <GT4> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      | (t = <GE1> | t = <GE2> | t = <GE3> | t = <GE4> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      | (t = <LE1> | t = <LE2> | t = <LE3> | t = <LE4> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      )
+     AddExpression ()
+     )*
+  { }
+}
+
+
+void AddExpression () :
+{
+  Token t;
+}
+{
+  MultiplyExpression ()
+    (
+     (
+      ( t = <PLUS1> | t = <PLUS2> | t = <PLUS3> | t = <PLUS4> ) 
+      { processSpecial(t); formatter.keyword(t.image); }
+      | ( t = <MINUS1> | t = <MINUS2> | t = <MINUS3> | t = <MINUS4> )
+      { processSpecial(t); formatter.keyword(t.image); }
+      )
+     MultiplyExpression ()
+     )*
+  { }
+}
+
+
+void MultiplyExpression () :
+{
+  Token t;
+}
+{
+  UnaryExpression ()
+    (
+     (
+      ( t = <MULTIPLY1> | t = <MULTIPLY2> | t = <MULTIPLY3> ) 
+      { processSpecial(t); formatter.keyword(t.image); }
+      | (t = <DIVIDE1> | t = <DIVIDE2> | t = <DIVIDE3> | t = <DIVIDE4>) 
+      { processSpecial(t); formatter.keyword(t.image); }
+      | (t = <MODULUS1> | t = <MODULUS2>)
+      { processSpecial(t); formatter.keyword(t.image); }
+      )
+     UnaryExpression ()
+     )*
+  { }
+}
+
+void ConditionalExpression () :
+{
+  Token t;
+}
+{
+ (
+  OrExpression ()
+  ( t = <COND> )
+  { processSpecial(t); formatter.keyword(t.image); }
+  Expression ()
+  ( t = <COLON> )
+  { processSpecial(t); formatter.keyword(t.image); }
+  Expression ()
+ )
+ { }
+}
+
+void UnaryExpression () :
+{
+  Token t;
+}
+{
+  (
+    (
+    (t = <NOT1> | t = <NOT2> | t = <NOT3> )
+    { processSpecial(t); formatter.keyword(t.image); }
+    | (t = <MINUS1> | t = <MINUS2> | t = <MINUS3> | t = <MINUS4> ) 
+    { processSpecial(t); formatter.keyword(t.image); }
+    | ( t = <EMPTY> )
+    { processSpecial(t); formatter.keyword(t.image); }
+    )
+  )*
+  Value ()
+  { }
+}
+
+
+void Value () :
+{
+  Token t;
+}
+{
+  ValuePrefix ()
+    (ValueSuffix () )*
+  { }
+}
+
+
+/**
+ * This is an element that can start a value
+ **/
+void ValuePrefix () :
+{
+  Token t;
+}
+{
+  (
+   Literal ()
+   | (t = <LPAREN1> | t = <LPAREN2>) 
+     { processSpecial(t); formatter.keyword(t.image); }
+     Expression () 
+     (t = <RPAREN1> | t = <RPAREN2>)
+     { processSpecial(t); formatter.keyword(t.image); }
+   | LOOKAHEAD(QualifiedName() (<LPAREN1> | <LPAREN2>)) {isFunction=true;} (FunctionInvocation ()) 
+   | NamedValue ()
+   )
+   { }
+}
+
+
+void NamedValue () :
+{
+  Token t;
+}
+{
+  t = <IDENTIFIER> 
+  { processSpecial(t); formatter.variable(t.image); }
+}
+
+
+void FunctionInvocation () :
+{
+  Token t;
+}
+{
+  (
+   ( QualifiedName() ) 
+   { isFunction = false; }
+   (t = <LPAREN1> | t = <LPAREN2>) 
+   { processSpecial(t); formatter.keyword(t.image); }
+    (
+      (
+        Expression ()
+      )
+      (
+        (t = <COMMA1> | t = <COMMA2>) 
+        { processSpecial(t); formatter.keyword(t.image); }
+        Expression ()
+      )*
+    )?
+   (t = <RPAREN1> | t = <RPAREN2>) 
+   { processSpecial(t); formatter.keyword(t.image); }
+  )
+  { }
+}
+
+
+void ValueSuffix () :
+{
+  Token t;
+}
+{
+  (
+   PropertySuffix ()
+   | ArraySuffix ()
+   )
+   { }
+}
+
+
+void PropertySuffix () :
+{
+  Token t;
+}
+{
+  (
+   ( t = <DOT> )
+   { processSpecial(t); formatter.property(t.image); }
+     (Identifier ())
+  )
+  { }
+}
+
+
+void ArraySuffix () :
+{
+  Token t;
+}
+{
+  (
+     ( t = <LBRACKET> )
+     { processSpecial(t); formatter.keyword(t.image); }
+     Expression ()
+     ( t = <RBRACKET> ) 
+     { processSpecial(t); formatter.keyword(t.image); }
+   )
+   { }
+}
+
+
+void Literal () :
+{
+  Token t;
+}
+{
+  (
+   BooleanLiteral ()
+   | IntegerLiteral ()
+   | FloatingPointLiteral ()
+   | StringLiteral ()
+   | NullLiteral ()
+   )
+   { }
+}
+
+
+void BooleanLiteral () :
+{
+  Token t;
+}
+{
+  ( t = <TRUE1> | t = <TRUE2> )
+  { processSpecial(t); formatter.constant(t.image); }
+  | ( t = <FALSE1> | t = <FALSE2> )
+  { processSpecial(t); formatter.constant(t.image); }
+}
+
+
+void StringLiteral () :
+{
+  Token t;
+}
+{
+  t = <STRING_LITERAL>
+  { processSpecial(t); formatter.constant(t.image); }
+}
+
+
+void IntegerLiteral () :
+{
+  Token t;
+}
+{
+  t = <INTEGER_LITERAL>
+  { processSpecial(t); formatter.constant(t.image); }
+}
+
+
+void FloatingPointLiteral () :
+{
+  Token t;
+}
+{
+  t = <FLOATING_POINT_LITERAL>
+  { processSpecial(t); formatter.constant(t.image); }
+}
+
+
+void NullLiteral () :
+{
+  Token t;
+}
+{
+  t = <NULL>
+  { processSpecial(t); formatter.constant(t.image); }
+}
+
+
+void Identifier () :
+{
+  Token t;
+}
+{
+  (
+   t = <IDENTIFIER>
+   )
+  { 
+    processSpecial(t); 
+    if ( isPrefix ) {
+      formatter.keyword(t.image);
+    }
+    else {
+      if (isFunction) {
+	formatter.function(t.image);
+      }
+      else {
+	formatter.variable(t.image);
+      }
+    }
+  }
+}
+
+void QualifiedName () :
+{
+  Token t = null;
+}
+{
+  (
+    (
+      LOOKAHEAD(Identifier() <COLON>)
+      {isPrefix=true;}
+      ( Identifier () ) 
+      {isPrefix=false;}
+      ( t = <COLON> )
+      { processSpecial(t); formatter.keyword(t.image); }
+    )?
+    Identifier ()
+  )
+  { }
+}

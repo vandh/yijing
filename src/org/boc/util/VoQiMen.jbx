@@ -1,0 +1,29 @@
+[PropertyInfo]
+day,int,false,false,day,day,true,<default>
+hour,int,false,false,hour,hour,true,<default>
+isBoy,boolean,false,false,isBoy,isBoy,true,<default>
+isheng,int,false,false,isheng,isheng,true,<default>
+ishi,int,false,false,ishi,ishi,true,<default>
+isYin,boolean,false,false,isYin,isYin,true,<default>
+isYun,boolean,false,false,isYun,isYun,true,<default>
+iZf,int,false,false,iZf,iZf,true,<default>
+IZfs,int,false,false, , ,true,<default>
+IZy,int,false,false, , ,true,<default>
+minute,int,false,false,minute,minute,true,<default>
+month,int,false,false,month,month,true,<default>
+ng,int,false,false,ng,ng,true,<default>
+nz,int,false,false,nz,nz,true,<default>
+rg,int,false,false,rg,rg,true,<default>
+rz,int,false,false,rz,rz,true,<default>
+sg,int,false,false,sg,sg,true,<default>
+sz,int,false,false,sz,sz,true,<default>
+year,int,false,false,year,year,true,<default>
+yg,int,false,false,yg,yg,true,<default>
+yydunNum,int,false,false,yydunNum,yydunNum,true,<default>
+yz,int,false,false,yz,yz,true,<default>
+memo,String,false,false,memo,memo,true,<default>
+[IconNames]
+
+
+
+

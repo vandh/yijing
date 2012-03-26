@@ -1,0 +1,48 @@
+[PropertyInfo]
+addr,String,false,false,addr,addr,true,<default>
+addr2,String,false,false,addr2,addr2,true,<default>
+bqt1,boolean,false,false, , ,true,<default>
+bqt2,boolean,false,false, , ,true,<default>
+code,String,false,false,code,code,true,<default>
+day,int,false,false, , ,true,<default>
+dw,String,false,false,dw,µ¥Î»,true,<default>
+email,String,false,false,email,email,true,<default>
+fileId,String,false,false, , ,true,<default>
+hour,int,false,false, , ,true,<default>
+iqt1,int,false,false,iQt1,iQt1,true,<default>
+Iqt2,int,false,false, , ,true,<default>
+isBoy,boolean,false,false, , ,true,<default>
+isheng,int,false,false, , ,true,<default>
+ishi,int,false,false, , ,true,<default>
+isYin,boolean,false,false, , ,true,<default>
+isYun,boolean,false,false, , ,true,<default>
+memo,String,false,false,memo,memo,true,<default>
+minute,int,false,false, , ,true,<default>
+month,int,false,false, , ,true,<default>
+msn,String,false,false,msn,msn,true,<default>
+name,String,false,false,name,name,true,<default>
+ng,int,false,false, , ,true,<default>
+nz,int,false,false, , ,true,<default>
+parent,String,false,false,parent,parent,true,<default>
+phone,String,false,false,phone,phone,true,<default>
+qq,String,false,false,qq,qq,true,<default>
+qt1,String,false,false,qt1,qt1,true,<default>
+qt2,String,false,false,qt2,qt2,true,<default>
+rg,int,false,false, , ,true,<default>
+root,String,false,false,root,root,true,<default>
+rowId,String,false,false, , ,true,<default>
+rz,int,false,false, , ,true,<default>
+second,int,false,false, , ,true,<default>
+sg,int,false,false, , ,true,<default>
+sz,int,false,false, , ,true,<default>
+tel,String,false,false,tel,tel,true,<default>
+ycsj,String,false,false,ycsj,ycsj,true,<default>
+year,int,false,false, , ,true,<default>
+yg,int,false,false, , ,true,<default>
+yz,int,false,false, , ,true,<default>
+zw,String,false,false,zw,zw,true,<default>
+[IconNames]
+
+
+
+

@@ -1,0 +1,1013 @@
+/*****************************************
+ * OPTIONS *
+ *****************************************/
+
+options {
+//  LOOKAHEAD = 2;
+//  FORCE_LA_CHECK = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = true;
+  STATIC = false;
+}
+
+/*****************************************
+ * PARSER JAVA CODE *
+ *****************************************/
+
+PARSER_BEGIN(ELParser)
+
+package org.boc.rule.parser;
+
+import org.boc.rule.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+
+/**
+ * Generated EL parser.
+ * 
+ * @author Nathan Abramson
+ * @author Shawn Bayern
+ */
+
+public class ELParser {
+  Set variableNames = new HashSet();
+  List functions = new ArrayList();
+  public Set getVariableNames()
+  {
+    return variableNames;
+  } 
+  public List getFunctions()
+  {
+    return functions;
+  }
+ 
+  public static void main(String args[]) 
+       throws ParseException
+  {
+    ELParser parser = new ELParser (System.in);
+    List exprs = parser.Expressions ();
+    System.err.println("Total :"+ exprs.size());
+  }
+  public Object[] currentStatus()
+  {
+    int line = jj_input_stream.getLine();
+    int column = jj_input_stream.getColumn();
+    String token = jj_input_stream.GetImage();
+    return new Object[]{new Integer(line), new Integer(column), token};
+  }
+}
+
+PARSER_END(ELParser)
+
+
+/*****************************************
+ * TOKENS *
+ *****************************************/
+
+/*****************************************
+/** Tokens appearing inside of an ${...} construct **/
+
+/* WHITE SPACE */
+
+<DEFAULT> SKIP :
+{
+  " "
+| "　"
+| "\t"
+| "\n"
+| "\r"
+}
+
+<DEFAULT> TOKEN :
+{
+/* Literals */
+
+  < INTEGER_LITERAL: ["0"-"9"] (["0"-"9","十","百","千","万","亿"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9","十","百","千","万","亿"])* (<EXPONENT>)?
+      | "." (["0"-"9","十","百","千","万","亿"])+ (<EXPONENT>)?
+      | (["0"-"9"])+ <EXPONENT>
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < STRING_LITERAL:
+      ("\"" ((~["\"","\\"]) | ("\\" ( ["\\","\""] )))* "\"") |
+      ("\'" ((~["\'","\\"]) | ("\\" ( ["\\","\'"] )))* "\'")
+  >
+|
+  < BADLY_ESCAPED_STRING_LITERAL:
+      ("\"" (~["\"","\\"])* ("\\" ( ~["\\","\""] ))) |
+      ("\'" (~["\'","\\"])* ("\\" ( ~["\\","\'"] )))
+  >
+
+/* Reserved Words and Symbols */
+
+| < TRUE1: "true" >
+| < TRUE2: "真" >
+| < FALSE1: "false" >
+| < FALSE2: "假" >
+| < NULL: "null" >
+| < DOT: "." >
+| < GT1: ">" >
+| < GT2: "gt" >
+| < GT3: "大于" >
+| < GT4: "超过" >
+| < LT1: "<" >
+| < LT2: "lt" >
+| < LT3: "小于" >
+| < LT4: "少于" >
+| < EQ1: "==" >
+| < EQ2: "eq" >
+| < EQ3: "是" >
+| < LE1: "<=" >
+| < LE2: "le" >
+| < LE3: "不大于" >
+| < LE4: "没超过" >
+| < GE1: ">=" >
+| < GE2: "ge" >
+| < GE3: "不小于" >
+| < GE4: "至少" >
+| < NE1: "!=" >
+| < NE2: "ne" >
+| < NE3: "不等于" >
+| < LPAREN1: "(" >
+| < LPAREN2: "（" >
+| < RPAREN1: ")" >
+| < RPAREN2: "）" >
+| < SEMI1: ";" >
+| < SEMI2: "；" >
+| < COMMA1: "," >
+| < COMMA2: "，" >
+| < COLON: ":" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < PLUS1: "+" >
+| < PLUS2: "加" >
+| < PLUS3: "正" >
+| < PLUS4: "＋" >
+| < MINUS1: "-" >
+| < MINUS2: "减" >
+| < MINUS3: "负" >
+| < MINUS4: "－" >
+| < MULTIPLY1: "*" >
+| < MULTIPLY2: "乘" >
+| < MULTIPLY3: "×" >
+| < DIVIDE1: "/" >
+| < DIVIDE2: "div" >
+| < DIVIDE3: "除" >
+| < DIVIDE4: "÷" >
+| < MODULUS1: "%" >
+| < MODULUS2: "mod" >
+| < NOT1: "not" >
+| < NOT2: "!" >
+| < NOT3: "不是" >
+| < AND1: "and" >
+| < AND2: "&&" >
+| < AND3: "并且" >
+| < OR1: "or" >
+| < OR2: "||" >
+| < OR3: "或者" >
+| < EMPTY: "empty" >
+| < COND: "?" >
+| < EQUAL1: "=" >
+| < EQUAL2: "等于" >
+| < EQUAL3: "为" >
+| < EQUAL4: "＝" >
+
+| < IF1 : "if" >
+| < IF2 : "如果" > 
+| < IF3 : "假如" >
+| < THEN1 : "then" >
+| < THEN2 : "那么" >
+| < THEN3 : "就" >
+| < ELSE1 : "else" >
+| < ELSE2 : "否则" >
+| < ELSE3 : "不然" >
+
+| < ADDEQ1 : "+=" >
+| < ADDEQ2 : "加上" >
+| < MINUSEQ1 : "-=" >
+| < MINUSEQ2 : "减去" >
+| < STATEMENT_START: "{" >
+| < STATEMENT_END: "}" >
+/* Identifiers */
+
+| < IDENTIFIER: (<LETTER>|<IMPL_OBJ_START>) (<LETTER>|<DIGIT>)* >
+| < #IMPL_OBJ_START: "#" >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+
+/* This is used to catch any non-matching tokens, so as to avoid any
+   TokenMgrErrors */
+| < ILLEGAL_CHARACTER: (~[]) >
+}
+
+
+/*****************************************
+ * GRAMMAR PRODUCTIONS *
+ *****************************************/
+/*
+List Expressions () :
+{
+  List elems = null;
+  Expression elem;
+}
+{
+  (
+    LOOKAHEAD(2) 
+    (
+      (elem = Expression () ( <SEMI1> | <SEMI2> )) |
+      (elem = IfThenElseExpression() ) 
+    )
+    {
+      if ( elems == null ) {
+      	 elems = new ArrayList();
+      }
+      elems.add(elem);
+    }
+  )*
+  {
+    return elems;
+  }
+}
+
+List Expressions () :
+{
+  List elems = null;
+  List ret = null;
+}
+{
+  (
+    elems = Statement() 
+    {
+      if (ret == null) {
+        ret = new ArrayList();
+      }
+      ret.addAll(elems);
+    }
+  )*
+  {
+    return ret;
+  }
+}
+
+List Statement():
+{
+  List elems = null;
+  Expression elem;
+}
+{
+  (
+    (elem = Expression () ( <SEMI1> | <SEMI2> )) |
+    (elem = IfThenElseExpression() ) 
+    (<STATEMENT_START> elems = Expressions() <STATEMENT_END>)
+  )
+  {
+    if (elems == null) {
+       elems = new ArrayList();
+       elems.add(elem);
+    }
+    return elems;
+  }
+}
+*/
+
+
+Expression Statement() : 
+{
+  Expression expr; 
+}
+{
+  ( LOOKAHEAD(2) 
+    expr = ExpressionStatement() |
+    expr = CompoundStatement() |
+    expr = IfThenElseExpression()
+  )
+  { return expr; }
+}
+
+List Expressions() : 
+{
+  List exprs = null;
+  Expression expr = null;
+}
+{
+  (
+    expr = Statement()
+    {
+      if (exprs == null) {
+        exprs = new ArrayList();
+      }
+      exprs.add(expr);
+    }
+  )+
+  {
+    return exprs;
+  } 
+}
+
+Expression CompoundStatement() : 
+{
+  List exprs = null;
+}
+{
+  (
+    <STATEMENT_START>
+    [ exprs = Expressions() ]
+    <STATEMENT_END>
+  )
+  { return new CompoundStatement(exprs); }
+}
+
+Expression ExpressionStatement() : 
+{
+  Expression expr = null;
+}
+{
+  (
+    [ expr = ExpressionSet() ] ( <SEMI1> | <SEMI2> )
+  )
+  { return new ExpressionStatement(expr); }
+}
+
+Expression ExpressionSet() : 
+{
+  List exprs;
+  Expression expr = null;
+}
+{
+  (
+    ( expr = Expression() )
+    {
+      exprs = new ArrayList();
+      exprs.add(expr);
+    }
+    ( 
+      ( ( <COMMA1> | <COMMA2> ) expr = Expression() )
+      { exprs.add(expr); }
+    )*
+  )
+  {
+    return new ExpressionSet(exprs);
+  }
+}
+
+Expression SpecialEqualExpression() :
+{
+  NamedValue left;
+  Expression right;
+  BinaryOperator operator;
+  List operators;
+  List expressions;
+}
+{
+  (
+    left = NamedValue () 
+    (
+      ( <ADDEQ1> | <ADDEQ2> ) { operator = PlusOperator.SINGLETON; }
+      | ( <MINUSEQ1> | <MINUSEQ2>) { operator = MinusOperator.SINGLETON; }
+    )
+    right = Expression ()
+  )
+  {
+    operators = new ArrayList();
+    expressions = new ArrayList();
+    operators.add(operator);
+    expressions.add(right);
+    return new LetExpression(left,
+           new BinaryOperatorExpression (left,
+	                                 operators,
+					 expressions));
+
+  }
+}
+
+Expression IfThenElseExpression() :
+{
+  Expression cond;
+  Expression then;
+  Expression other = null;
+}
+{
+  (
+    ( <IF1> | <IF2> | <IF3> )
+    cond = OrExpression()
+    ( <THEN1> | <THEN2> | <THEN3> )
+    then = Statement()
+    [ 
+      LOOKAHEAD(1) (<ELSE1> | <ELSE2> | <ELSE3>)
+      other = Statement() 
+    ]
+  )
+  { return new IfThenElseExpression(cond, then, other); }
+}
+
+
+Expression LetExpression() :
+{
+  NamedValue id;
+  Expression expr;
+}
+{
+  (
+    id = NamedValue () 
+    ( <EQUAL1> | <EQUAL2> | <EQUAL3> | <EQUAL4>)
+    expr = Expression ()
+  )
+  { 
+    return new LetExpression(id, expr); 
+  }
+}
+
+Expression Expression () :
+{
+  Expression ret;
+}
+{
+  (
+   LOOKAHEAD(ConditionalExpression()) ret = ConditionalExpression() |
+   LOOKAHEAD(LetExpression()) ret = LetExpression() |
+   LOOKAHEAD(SpecialEqualExpression()) ret = SpecialEqualExpression() |
+   ret = OrExpression () 
+  )
+  { return ret; }
+}
+
+
+Expression OrExpression () :
+{
+  Expression startExpression;
+  BinaryOperator operator;
+  Expression expression;
+  List operators = null;
+  List expressions = null;
+}
+{
+  startExpression = AndExpression ()
+
+    (
+     (
+      (<OR1> | <OR2> | <OR3> ) { operator = OrOperator.SINGLETON; }
+      )
+     expression = AndExpression ()
+
+      {
+	if (operators == null) {
+	  operators = new ArrayList ();
+	  expressions = new ArrayList ();
+	}
+	operators.add (operator);
+	expressions.add (expression);
+      }
+     )*
+
+  {
+    if (operators != null) {
+      return new BinaryOperatorExpression (startExpression,
+					   operators,
+					   expressions);
+    }
+    else {
+      return startExpression;
+    }
+  }
+}
+
+
+Expression AndExpression () :
+{
+  Expression startExpression;
+  BinaryOperator operator;
+  Expression expression;
+  List operators = null;
+  List expressions = null;
+}
+{
+  startExpression = EqualityExpression ()
+
+    (
+     (
+      (<AND1> | <AND2> | <AND3> ) { operator = AndOperator.SINGLETON; }
+      )
+     expression = EqualityExpression ()
+
+      {
+	if (operators == null) {
+	  operators = new ArrayList ();
+	  expressions = new ArrayList ();
+	}
+	operators.add (operator);
+	expressions.add (expression);
+      }
+     )*
+
+  {
+    if (operators != null) {
+      return new BinaryOperatorExpression (startExpression,
+					   operators,
+					   expressions);
+    }
+    else {
+      return startExpression;
+    }
+  }
+}
+
+
+Expression EqualityExpression () :
+{
+  Expression startExpression;
+  BinaryOperator operator;
+  Expression expression;
+  List operators = null;
+  List expressions = null;
+}
+{
+  startExpression = RelationalExpression ()
+
+    (
+     (
+      (<EQ1> | <EQ2> | <EQ3> ) { operator = EqualsOperator.SINGLETON; }
+      | (<NE1> | <NE2> | <NE3> ) { operator = NotEqualsOperator.SINGLETON; }
+      )
+     expression = RelationalExpression ()
+
+      {
+	if (operators == null) {
+	  operators = new ArrayList ();
+	  expressions = new ArrayList ();
+	}
+	operators.add (operator);
+	expressions.add (expression);
+      }
+     )*
+
+  {
+    if (operators != null) {
+      return new BinaryOperatorExpression (startExpression,
+					   operators,
+					   expressions);
+    }
+    else {
+      return startExpression;
+    }
+  }
+}
+
+
+Expression RelationalExpression () :
+{
+  Expression startExpression;
+  BinaryOperator operator;
+  Expression expression;
+  List operators = null;
+  List expressions = null;
+}
+{
+  startExpression = AddExpression ()
+
+    (
+     (
+      (<LT1> | <LT2> | <LT3> | <LT4> ) { operator = LessThanOperator.SINGLETON; }
+      | (<GT1> | <GT2> | <GT3> | <GT4> ) { operator = GreaterThanOperator.SINGLETON; }
+      | (<GE1> | <GE2> | <GE3> | <GE4> ) { operator = GreaterThanOrEqualsOperator.SINGLETON; }
+      | (<LE1> | <LE2> | <LE3> | <LE4> ) { operator = LessThanOrEqualsOperator.SINGLETON; }
+      )
+     expression = AddExpression ()
+
+      {
+	if (operators == null) {
+	  operators = new ArrayList ();
+	  expressions = new ArrayList ();
+	}
+	operators.add (operator);
+	expressions.add (expression);
+      }
+     )*
+
+  {
+    if (operators != null) {
+      return new BinaryOperatorExpression (startExpression,
+					   operators,
+					   expressions);
+    }
+    else {
+      return startExpression;
+    }
+  }
+}
+
+
+Expression AddExpression () :
+{
+  Expression startExpression;
+  BinaryOperator operator;
+  Expression expression;
+  List operators = null;
+  List expressions = null;
+}
+{
+  startExpression = MultiplyExpression ()
+
+    (
+     (
+      ( <PLUS1> | <PLUS2> | <PLUS3> | <PLUS4> ) { operator = PlusOperator.SINGLETON; }
+      | ( <MINUS1> | <MINUS2> | <MINUS3> | <MINUS4> ) { operator = MinusOperator.SINGLETON; }
+      )
+     expression = MultiplyExpression ()
+
+      {
+	if (operators == null) {
+	  operators = new ArrayList ();
+	  expressions = new ArrayList ();
+	}
+	operators.add (operator);
+	expressions.add (expression);
+      }
+     )*
+
+  {
+    if (operators != null) {
+      return new BinaryOperatorExpression (startExpression,
+					   operators,
+					   expressions);
+    }
+    else {
+      return startExpression;
+    }
+  }
+}
+
+
+Expression MultiplyExpression () :
+{
+  Expression startExpression;
+  BinaryOperator operator;
+  Expression expression;
+  List operators = null;
+  List expressions = null;
+}
+{
+  startExpression = UnaryExpression ()
+
+    (
+     (
+      ( <MULTIPLY1> | <MULTIPLY2> | <MULTIPLY3> ) { operator = MultiplyOperator.SINGLETON; }
+      | (<DIVIDE1> | <DIVIDE2> | <DIVIDE3> | <DIVIDE4>) { operator = DivideOperator.SINGLETON; }
+      | (<MODULUS1> | <MODULUS2>) { operator = ModulusOperator.SINGLETON; }
+      )
+     expression = UnaryExpression ()
+
+      {
+	if (operators == null) {
+	  operators = new ArrayList ();
+	  expressions = new ArrayList ();
+	}
+	operators.add (operator);
+	expressions.add (expression);
+      }
+     )*
+
+  {
+    if (operators != null) {
+      return new BinaryOperatorExpression (startExpression,
+					   operators,
+					   expressions);
+    }
+    else {
+      return startExpression;
+    }
+  }
+}
+
+Expression ConditionalExpression () :
+{
+ Expression condition, trueBranch, falseBranch;
+}
+{
+ (
+  condition = OrExpression ()
+  <COND>
+  trueBranch = Expression ()
+  <COLON>
+  falseBranch = Expression ()
+ )
+ {
+  return new ConditionalExpression(condition, trueBranch, falseBranch);
+ }
+}
+
+Expression UnaryExpression () :
+{
+  Expression expression;
+  UnaryOperator singleOperator = null;
+  UnaryOperator operator;
+  List operators = null;
+}
+{
+  (
+    (
+    (<NOT1> | <NOT2> | <NOT3> ) { operator = NotOperator.SINGLETON; }
+    | (<MINUS1> | <MINUS2> | <MINUS3> | <MINUS4> ) { operator = UnaryMinusOperator.SINGLETON; }
+    | <EMPTY> { operator = EmptyOperator.SINGLETON; }
+    )
+    {
+     if (singleOperator == null) {
+      singleOperator = operator;
+     }
+     else if (operators == null) {
+      operators = new ArrayList ();
+      operators.add (singleOperator);
+      operators.add (operator);
+     }
+     else {
+      operators.add (operator);
+     }
+    }
+  )*
+
+    expression = Value ()
+
+  {
+    if (operators != null) {
+      return new UnaryOperatorExpression (null, operators, expression);
+    }
+    else if (singleOperator != null) {
+      return new UnaryOperatorExpression (singleOperator, null, expression);
+    }
+    else {
+      return expression;
+    }
+  }
+}
+
+
+Expression Value () :
+{
+  Expression prefix;
+  ValueSuffix suffix;
+  List suffixes = null;
+}
+{
+  prefix = ValuePrefix ()
+    (suffix = ValueSuffix () 
+      { 
+	if (suffixes == null) {
+	  suffixes = new ArrayList ();
+	}
+	suffixes.add (suffix);
+      }
+     )*
+
+  {
+    if (suffixes == null) {
+      return prefix;
+    }
+    else {
+      return new ComplexValue (prefix, suffixes);
+    }
+  }
+}
+
+
+/**
+ * This is an element that can start a value
+ **/
+Expression ValuePrefix () :
+{
+  Expression ret;
+}
+{
+  (
+   ret = Literal ()
+   | (<LPAREN1> | <LPAREN2>) ret = Expression () (<RPAREN1> | <RPAREN2>)
+   | LOOKAHEAD(QualifiedName() (<LPAREN1> | <LPAREN2>)) ret = FunctionInvocation ()
+   | ret = NamedValue ()
+   )
+    { return ret; }
+}
+
+
+NamedValue NamedValue () :
+{
+  Token t;
+}
+{
+  t = <IDENTIFIER> { variableNames.add(t.image); return new NamedValue (t.image); }
+}
+
+
+FunctionInvocation FunctionInvocation () :
+{
+  String qualifiedName;
+  List argumentList = new ArrayList();
+  Expression exp;
+}
+{
+  (
+   qualifiedName = QualifiedName()
+   (<LPAREN1> | <LPAREN2>) 
+    (
+      (
+        exp = Expression ()
+        {
+          argumentList.add(exp);
+        }
+      )
+      (
+        (<COMMA1> | <COMMA2>) 
+        exp = Expression ()
+        {
+          argumentList.add(exp);
+        }
+      )*
+    )?
+   (<RPAREN1> | <RPAREN2>) 
+  )
+  {
+    FunctionInvocation function = new FunctionInvocation(qualifiedName, argumentList);
+    functions.add(function);
+    return function;
+  }
+}
+
+
+ValueSuffix ValueSuffix () :
+{
+  ValueSuffix suffix;
+}
+{
+  (
+   suffix = PropertySuffix ()
+   | suffix = ArraySuffix ()
+   )
+
+    { return suffix; }
+}
+
+
+PropertySuffix PropertySuffix () :
+{
+  Token t;
+  String property;
+}
+{
+  <DOT> 
+     (property = Identifier ())
+
+    {
+      return new PropertySuffix (property);
+    }
+}
+
+
+ArraySuffix ArraySuffix () :
+{
+  Expression index;
+}
+{
+  <LBRACKET>
+     index = Expression ()
+     <RBRACKET>
+   
+   {
+     return new ArraySuffix (index);
+   }
+}
+
+
+Literal Literal () :
+{
+  Literal ret;
+}
+{
+  (
+   ret = BooleanLiteral ()
+   | ret = IntegerLiteral ()
+   | ret = FloatingPointLiteral ()
+   | ret = StringLiteral ()
+   | ret = NullLiteral ()
+   )
+    { return ret; }
+}
+
+
+BooleanLiteral BooleanLiteral () :
+{
+}
+{
+  ( <TRUE1> | <TRUE2> ) { return BooleanLiteral.TRUE; }
+  | ( <FALSE1> | <FALSE2> ) { return BooleanLiteral.FALSE; }
+}
+
+
+StringLiteral StringLiteral () :
+{
+  Token t;
+}
+{
+  t = <STRING_LITERAL>
+  { return StringLiteral.fromToken (t.image); }
+}
+
+
+IntegerLiteral IntegerLiteral () :
+{
+  Token t;
+}
+{
+  t = <INTEGER_LITERAL>
+  { return new IntegerLiteral (t.image); }
+}
+
+
+FloatingPointLiteral FloatingPointLiteral () :
+{
+  Token t;
+}
+{
+  t = <FLOATING_POINT_LITERAL>
+  { return new FloatingPointLiteral (t.image); }
+}
+
+
+NullLiteral NullLiteral () :
+{
+}
+{
+  <NULL>
+    { return NullLiteral.SINGLETON; }
+}
+
+
+String Identifier () :
+{
+  Token t;
+}
+{
+  (
+   t = <IDENTIFIER>
+   )
+    { return t.image; }
+}
+
+String QualifiedName () :
+{
+  String prefix = null, localPart = null;
+}
+{
+  (
+    (
+      LOOKAHEAD(Identifier() <COLON>)
+      prefix = Identifier ()
+      <COLON>
+    )?
+    localPart = Identifier ()
+  )
+  {
+    if (prefix == null)
+      return localPart;
+    else
+     return prefix + ":" + localPart;
+  }
+}

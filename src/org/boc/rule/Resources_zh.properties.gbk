@@ -1,0 +1,136 @@
+EXCEPTION_GETTING_BEANINFO=\
+	取得Bean{0}的信息出现异常
+
+NULL_EXPRESSION_STRING=\
+	不能计算没有内容的表达式
+
+PARSE_EXCEPTION=\
+	发现"{1}", 但期望[{0}]
+
+CANT_GET_PROPERTY_OF_NULL=\
+	试图从一个空的对象取得"{0}"的属性值
+
+NO_SUCH_PROPERTY=\
+	类{0}中不存在属性"{1}"
+
+NO_GETTER_METHOD=\
+	类{1}中的属性"{0}"没有公开的getter方法
+
+ERROR_GETTING_PROPERTY=\
+	An error occurred while getting property "{0}" from an instance \
+	of class {1}
+
+CANT_GET_INDEXED_VALUE_OF_NULL=\
+	Attempt to apply the "{0}" operator to a null value
+
+CANT_GET_NULL_INDEX=\
+	Attempt to apply a null index to the "{0}" operator
+
+NULL_INDEX=\
+	The index supplied to the "{0}" operator may not be null
+
+BAD_INDEX_VALUE=\
+	The "{0}" operator was supplied with an index value of type \
+	"{1}" to be applied to a List or array, but \
+	that value cannot be converted to an integer.
+
+EXCEPTION_ACCESSING_LIST=\
+	An exception occurred while trying to access index {0} of a \
+	List
+
+EXCEPTION_ACCESSING_ARRAY=\
+	An exception occurred while trying to access index {0} of an \
+	Array
+
+CANT_FIND_INDEX=\
+	Unable to find a value for "{0}" in object of class "{1}" using \
+	operator "{2}"
+
+TOSTRING_EXCEPTION=\
+	An object of type "{0}" threw an exception in its toString() \
+	method while trying to be coerced to a String
+
+BOOLEAN_TO_NUMBER=\
+	Attempt to coerce a boolean value "{0}" to type \
+	"{1}"
+
+STRING_TO_NUMBER_EXCEPTION=\
+	An exception occured trying to convert String "{0}" to type "{1}"
+
+COERCE_TO_NUMBER=\
+	Attempt to coerce a value of type "{0}" to type "{1}"
+
+BOOLEAN_TO_CHARACTER=\
+	Attempt to coerce a boolean value "{0}" to type Character
+
+EMPTY_STRING_TO_CHARACTER=\
+	Attempt to coerce an empty String to type Character
+
+COERCE_TO_CHARACTER=\
+	Attempt to coerce a value of type "{0}" to Character
+
+NULL_TO_BOOLEAN=\
+	试图将空值null转换成布尔型失败
+
+STRING_TO_BOOLEAN=\
+	试图将字符串"{0}"转换成布尔型失败
+
+COERCE_TO_BOOLEAN=\
+	试图转换类型"{0}"的值到布尔型失败
+
+COERCE_TO_OBJECT=\
+	试图转换类型"{0}"的值到类型"{1}"失败
+
+NO_PROPERTY_EDITOR=\
+	试图转换字符串"{0}"到类型"{1}", 但没有实现对应的转换
+
+PROPERTY_EDITOR_ERROR=\
+	无法解析值"{0}"到对应的类型"{1}"
+
+ARITH_OP_NULL=\
+	无法对空值进行"{0}"运算
+
+ARITH_OP_BAD_TYPE=\
+	无法对类型"{1}"和类型"{2}"的值进行"{0}"运算
+
+ARITH_ERROR=\
+	对"{1}"和"{2}"进行"{0}"运算出错
+
+ERROR_IN_EQUALS=
+	对类型"{0}"的对象与类型"{1}"的对象进行相等比较"{2}"出错
+
+UNARY_OP_BAD_TYPE=\
+	试图对类型"{1}"的对象进行"{0}"运算出错
+
+NAMED_VALUE_NOT_FOUND=\
+	没有找到变量"{0}"对应的值
+
+CANT_GET_INDEXED_PROPERTY=\
+	在类型为"{0}"的对象数组中找不到索引为"{1}"的对象
+
+COMPARABLE_ERROR=\
+	对类型"{0}"和类型"{1}"的对象进行比较运算"{2}"出错
+
+BAD_IMPLICIT_OBJECT=\
+	No such implicit object "{0}" - the only implicit objects are: \
+	{1}
+
+ATTRIBUTE_EVALUATION_EXCEPTION=\
+	An error occurred while evaluating custom action attribute "{0}" \
+	with value "{1}": {2} ({3})
+
+ATTRIBUTE_PARSE_EXCEPTION=\
+	An error occurred while parsing custom action attribute "{0}" \
+	with value "{1}": {2}
+
+UNKNOWN_FUNCTION=\
+	使用了没有提供的函数"{0}"
+
+INAPPROPRIATE_FUNCTION_ARG_COUNT=\
+	函数"{0}"需要参数 {1}，但是传入了 {2}
+
+FUNCTION_INVOCATION_ERROR=\
+	计算函数"{0}"出现异常
+
+PARSE_STATUS=\
+	行"{0}", 列"{1}", 符号"{2}"

@@ -1,0 +1,11 @@
+[PropertyInfo]
+qgfs,int,false,false,qgfs,qgfs,true,<default>
+ys,int,false,false,ys,ys,true,<default>
+up,int,false,false,up,up,true,<default>
+down,int,false,false,down,down,true,<default>
+dy,String,false,false,dy,dy,true,<default>
+[IconNames]
+
+
+
+
