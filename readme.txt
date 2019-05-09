@@ -1,7 +1,3 @@
-vandh
-simon.884856
-vandh@163.com
-
 1. jdk1.6,环境变量		java_home=D:\java_project\sdk\jdk1.6;  path=%java_home%\bin;
 2. maven3，环境变量   maven_home=D:\java_project\sdk\maven3; path=%maven_home%\bin;
 
